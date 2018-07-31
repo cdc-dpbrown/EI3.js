@@ -1,0 +1,277 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<html xmlns="http://www.w3.org/1999/xhtml" >
+	<head>
+		<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+		<title>Output</title>
+		<style type="text/css">
+            h1
+            {
+            color:#4a7ac9;
+            }
+            table
+            {
+            border-collapse:collapse;
+            padding:5px;
+            }
+            td
+            {
+            border-style:solid;
+            border-color:Black;
+            border-width:1px;
+            }
+            th
+            {
+            border-style:solid;
+            border-color:Black;
+            border-width:1px;
+            padding-left:.3em;
+            padding-right:.3em;
+            background-color:#4a7ac9;
+            color:#FFFFFF;
+            }
+            td.Stats
+            {
+            border-style:none;
+            border-width:0px;
+            padding-left:5px;
+            padding-right:5px;
+            padding-bottom:0px;
+            }
+            th.Stats
+            {
+            border-style:none;
+            border-width:0px;
+            background-color:#4a7ac9;
+            color:#FFFFFF;
+            padding:5px;
+            }
+            hr
+            {
+            background-color:#d2451e;
+            }
+            div.PercentBar_Summary
+            {
+            filter: progid:DXImageTransform.Microsoft.Gradient(gradientType=0,startColorStr="Yellow",endColorStr=#ffd38e);
+            background-color:#fe9451;
+            height: 3px;
+            }
+      
+            div.PercentBar_Totals
+            {
+            filter: progid:DXImageTransform.Microsoft.Gradient(gradientType=0,startColorStr=#ffd38e,endColorStr=#fe9451);
+            background-color:#fe9451;
+            height: 3px;
+            }
+            
+            td.Crosstabs
+            {
+            border-style:none;
+            border-width:0px;
+            padding:0px;
+            }
+      
+            td.TwoByTwo
+            {
+            border-style:none;
+            border-width:0px;
+            padding:0px;
+            }
+            
+            div.Crosstab_Red
+            {
+            FILTER:PROGID:DXIMAGETRANSFORM.MICROSOFT.GRADIENT(GRADIENTTYPE=1, STARTCOLORSTR='Red', ENDCOLORSTR='#00FF0000') PROGID:DXIMAGETRANSFORM.MICROSOFT.GRADIENT(GRADIENTTYPE=0, STARTCOLORSTR='Red', ENDCOLORSTR='#00FF0000' );
+            }
+            
+            div.Crosstab_Green
+            {
+            FILTER:PROGID:DXIMAGETRANSFORM.MICROSOFT.GRADIENT(GRADIENTTYPE=1, STARTCOLORSTR='#00FF0000', ENDCOLORSTR='Green') PROGID:DXIMAGETRANSFORM.MICROSOFT.GRADIENT(GRADIENTTYPE=0, STARTCOLORSTR='#00FF0000', ENDCOLORSTR='Green' );
+            }
+            
+            div.Crosstab_Yellow
+            {
+            FILTER:PROGID:DXIMAGETRANSFORM.MICROSOFT.GRADIENT(GRADIENTTYPE=1, STARTCOLORSTR='Yellow', ENDCOLORSTR='#00FF0000') PROGID:DXIMAGETRANSFORM.MICROSOFT.GRADIENT(GRADIENTTYPE=0, STARTCOLORSTR='#00FF0000', ENDCOLORSTR='Yellow' );
+            }
+            
+            div.Crosstab_Orange
+            {
+            FILTER:PROGID:DXIMAGETRANSFORM.MICROSOFT.GRADIENT(GRADIENTTYPE=1, STARTCOLORSTR='#00FF0000', ENDCOLORSTR='Orange') PROGID:DXIMAGETRANSFORM.MICROSOFT.GRADIENT(GRADIENTTYPE=0, STARTCOLORSTR='Orange', ENDCOLORSTR='#00FF0000' );
+            }
+      
+          </style>
+    <style>
+        .bar {
+            fill: steelblue;
+        }
+    
+        .bar:hover {
+            fill: brown;
+        }
+    
+        .axis--x path {
+            display: none;
+        }
+
+        .epiinfochart pre{
+            display: none;
+        }
+    </style>
+
+    <script>
+
+
+
+
+        function renderEpiCurve(renderNode) {
+        
+        var nodeJson = JSON.parse(renderNode.children[0].innerHTML);
+        var data = nodeJson.chart.data;
+
+        var parseDate = d3.timeParse("%m/%d/%Y %H:%M:%S %p");
+        var formatCount = d3.format(",.0f");
+    
+        var margin = {top: 10, right: 30, bottom: 30, left: 30};
+        var width = 960 - margin.left - margin.right;
+        var height = 500 - margin.top - margin.bottom;
+
+        var x = d3.scaleBand().rangeRound([0, width]).padding(0.1);
+        var y = d3.scaleLinear().rangeRound([height, 0]);
+
+        var svg = d3.select("#" + renderNode.id).append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    
+        var g = svg.append("g")
+            .attr("class", "axis axis--x")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x));
+            
+        var xDates = data.map(function(d) { return parseDate(d.date); }); 
+        xDates = data.map(function(d) { return d.date }); 
+        x.domain(xDates);
+
+        var yValues = d3.max(data, function(d) { return d.value; }); 
+        y.domain([0, yValues]);
+        
+        g.append("g")
+            .attr("class", "axis axis--x")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x));
+
+        g.append("g")
+            .attr("class", "axis axis--y")
+            .call(d3.axisLeft(y).ticks(10, "%"))
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", "0.71em")
+            .attr("text-anchor", "end")
+            .text("Frequency");
+
+        var bar = svg.selectAll(".bar")
+            .data(data)
+            .enter().append("rect")
+            .attr("class", "bar")
+            .attr("x", function(d) { return x(d.date); })
+            .attr("y", function(d) { return y(d.value); })
+            .attr("width", x.bandwidth())
+            .attr("height", function(d) { return height - y(d.value); });
+        }
+
+        function type(d) {
+            d.date = parseDate(d.date);
+            return d;
+        }
+        
+        function renderSwitch(chartNodeList){
+            chartNodeList.forEach(function(chartNode){
+                var nodeData = JSON.parse(chartNode.children[0].innerHTML);
+                switch (nodeData.chart.type){
+                    case "epicurve" :
+                        renderEpiCurve(chartNode);
+                        break;
+                    case "columnchart" :
+                        renderEpiCurve(chartNode);
+                        break;
+                }
+            });
+        }
+
+        function renderAnalysisPage(){
+            var charts = document.querySelectorAll(".epiinfochart");
+            renderSwitch(charts);
+        }
+
+        </script>
+	</head>
+	<body onload="renderAnalysisPage();">
+	<h1>
+        <font color="#365F91">Epi Info</font>
+    </h1>
+    <br/>
+
+    <h3></h3><hr/><i>Current Data Source:&nbsp;</i><b>C:\_CODE\Epi-Info-Community-Edition\Build\Debug\Projects\Salmonellosis\Salmonellosis.prj:Survey_Final</b><br/><i>Record Count:&nbsp;&nbsp;</i><b>309</b>&nbsp;<i>(Deleted Records Excluded)&nbsp;&nbsp;&nbsp;</i><i>Date:</i>&nbsp;&nbsp;<b>7/24/2018 3:52:18 PM</b><br/><br/>
+
+<div id="c1" class="epiinfochart">   
+    <pre>
+        {"chart": {
+            "id": "file",
+            "type": "epicurve",
+            "data":[
+                { "date":"05/06/2012 12:00:00 AM", "value":22 },
+                { "date":"05/07/2012 12:00:00 AM", "value":70 },
+                { "date":"05/08/2012 12:00:00 AM", "value":75 },
+                { "date":"05/09/2012 12:00:00 AM", "value":26 }
+            ]
+        }}
+    </pre>
+</div>
+
+<div id="c2" class="epiinfochart"> 
+    <pre>
+        {"chart": {
+            "id": "file",
+            "type": "epicurve",
+            "data":[
+                { "date":"05/06/2012 12:00:00 AM", "value":84 },
+                { "date":"05/07/2012 12:00:00 AM", "value":2 },
+                { "date":"05/08/2012 12:00:00 AM", "value":77 },
+                { "date":"05/09/2012 12:00:00 AM", "value":56 },
+                { "date":"05/10/2012 12:00:00 AM", "value":45 },
+                { "date":"05/11/2012 12:00:00 AM", "value":35 },
+                { "date":"05/12/2012 12:00:00 AM", "value":22 },
+                { "date":"05/13/2012 12:00:00 AM", "value":70 },
+                { "date":"05/14/2012 12:00:00 AM", "value":75 },
+                { "date":"05/15/2012 12:00:00 AM", "value":26 }
+            ]
+        }}
+    </pre>
+</div>
+
+<br />
+
+<hr/>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
