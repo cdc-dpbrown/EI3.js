@@ -1,5 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <script src="https://d3js.org/d3.v5.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <html xmlns="http://www.w3.org/1999/xhtml" >
 	<head>
 		<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
@@ -127,6 +128,35 @@
         .iconGreen {
             color: #69BC45;
         }
+        body{
+           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        }
+        .settings{
+            position: absolute; 
+            top: 0; 
+            right: 0; 
+            z-index: 10; 
+            border-style: solid; 
+            border-width: 2px;
+            background: #FFFFFF;
+        }
+        .settingsClickDiv{
+            float: right;
+            width: 100%; 
+            text-align: right;
+            display: block;
+            float: "clear"; 
+        }
+        .inputs{
+            display: none;
+            clear: both;
+            margin-left: 20px;
+            margin-right: 20px;
+            font-size: smaller;
+        }
+        .settingsInput{
+            width: 100%;
+        }
     </style>
 
     <script>
@@ -217,9 +247,34 @@
             renderSwitch(charts);
         }
 
+        function toggleSettings(d){
+            var inputs = d.parentNode.childNodes[3];
+            if(inputs.style.display === "none"||""){
+                d.parentNode.style.width = "40%";
+                d.parentNode.style.height = "100%";
+                inputs.style.display = "block";
+            }
+            else{
+                d.parentNode.style.width = "auto";
+                d.parentNode.style.height = "auto";
+                inputs.style.display = "none";
+            }
+        }
+        function minimizeSettings(){
+            // var settingsDivs = document.querySelectorAll(".settings");
+            // settingsDivs.forEach(function(node){minimizeSetting(node);});
+        }
+        function minimizeSetting(settingNode){
+            settingNode.style.width = "auto";
+            settingNode.style.height = "auto";
+
+            var inputs = settingNode.childNodes[3];
+            inputs.style.display = "none";
+        }
+
         </script>
 	</head>
-	<body onload="renderAnalysisPage();">
+	<body onload="renderAnalysisPage();" onclick="minimizeSettings()" >
 	<h1>
         <font color="#365F91">Epi Info</font>
     </h1>
@@ -227,7 +282,52 @@
 
     <h3></h3><hr/><i>Current Data Source:&nbsp;</i><b>C:\_CODE\Epi-Info-Community-Edition\Build\Debug\Projects\Salmonellosis\Salmonellosis.prj:Survey_Final</b><br/><i>Record Count:&nbsp;&nbsp;</i><b>309</b>&nbsp;<i>(Deleted Records Excluded)&nbsp;&nbsp;&nbsp;</i><i>Date:</i>&nbsp;&nbsp;<b>7/24/2018 3:52:18 PM</b><br/><br/>
 
-<div id="c1" class="epiinfochart">   
+<div id="c1" class="epiinfochart" style="width: 1000px; position: relative;">   
+    <pre>
+        {"chart": {
+            "id": "file",
+            "type": "epicurve",
+            "data":[
+                { "date":"05/06/2012", "value":22 },
+                { "date":"05/07/2012", "value":70 },
+                { "date":"05/08/2012", "value":75 },
+                { "date":"05/09/2012", "value":26 }
+            ]
+        }}
+    </pre>
+    <div class="settings">
+        <div class="settingsClickDiv" onclick="toggleSettings(this)"><a><strong>&nbsp;...&nbsp;</strong></a></div>
+        <div id="inputs" class="inputs" style="display: none;">
+            <div style="width: 100%; height: 50px;">Chart Title<br><input type="text" class="settingsInput" name="firstname"><br></div>
+            <div style="width: 100%; height: 50px;">Legend Title<br><input type="text" class="settingsInput" name="firstname"><br></div>
+            <div style="width: 100%; height: 50px;">X-Axis Label<br><input type="text" class="settingsInput" name="firstname"><br></div>
+            <div style="width: 100%; height: 50px;">Y-Axis Label<br><input type="text" class="settingsInput" name="firstname"><br></div>
+        </div>
+    </div>
+</div>
+
+<div id="c2" class="epiinfochart"> 
+    <pre>
+        {"chart": {
+            "id": "file",
+            "type": "epicurve",
+            "data":[
+                { "date":"05/06/2012", "value":84 },
+                { "date":"05/07/2012", "value":2 },
+                { "date":"05/08/2012", "value":77 },
+                { "date":"05/09/2012", "value":56 },
+                { "date":"05/10/2012", "value":45 },
+                { "date":"05/11/2012", "value":35 },
+                { "date":"05/12/2012", "value":22 },
+                { "date":"05/13/2012", "value":70 },
+                { "date":"05/14/2012", "value":75 },
+                { "date":"05/15/2012", "value":26 }
+            ]
+        }}
+    </pre>
+</div>
+
+<div id="c3" class="epiinfochart">   
     <pre>
         {"chart": {
             "id": "file",
@@ -235,14 +335,14 @@
             "data":[
                 { "date":"05/06/2012 12:00:00 AM", "value":22 },
                 { "date":"05/07/2012 12:00:00 AM", "value":70 },
-                { "date":"05/08/2012 12:00:00 AM", "value":75 },
-                { "date":"05/09/2012 12:00:00 AM", "value":26 }
+                { "date":"06/08/2012 12:00:00 AM", "value":75 },
+                { "date":"06/09/2012 12:00:00 AM", "value":26 }
             ]
         }}
     </pre>
 </div>
 
-<div id="c2" class="epiinfochart"> 
+<div id="c4" class="epiinfochart"> 
     <pre>
         {"chart": {
             "id": "file",
@@ -263,44 +363,5 @@
     </pre>
 </div>
 
-<div id="c1" class="epiinfochart">   
-    <pre>
-        {"chart": {
-            "id": "file",
-            "type": "epicurve",
-            "data":[
-                { "date":"05/06/2012 12:00:00 AM", "value":22 },
-                { "date":"05/07/2012 12:00:00 AM", "value":70 },
-                { "date":"06/08/2012 12:00:00 AM", "value":75 },
-                { "date":"06/09/2012 12:00:00 AM", "value":26 }
-            ]
-        }}
-    </pre>
-</div>
-
-
 <br />
-
 <hr/>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>

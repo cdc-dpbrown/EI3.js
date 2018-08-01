@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<!-- saved from url=(0041)https://bl.ocks.org/mbostock/raw/3885705/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style>
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  position: relative;
+  width: 960px;
+}
+
+.axis text {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.bar {
+  fill: steelblue;
+  fill-opacity: .9;
+}
+
+.x.axis path {
+  display: none;
+}
+
+label {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+</style>
+</head><body><label><input type="checkbox"> Sort values</label>
+<script src="./sortValues_files/d3.v3.min.js.download"></script>
+<script>
+
+var margin = {top: 20, right: 20, bottom: 30, left: 40},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+var formatPercent = d3.format(".0%");
+
+var x = d3.scale.ordinal()
+    .rangeRoundBands([0, width], .1, 1);
+
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .tickFormat(formatPercent);
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+d3.tsv("data.tsv", function(error, data) {
+
+  data.forEach(function(d) {
+    d.frequency = +d.frequency;
+  });
+
+  x.domain(data.map(function(d) { return d.letter; }));
+  y.domain([0, d3.max(data, function(d) { return d.frequency; })]);
+
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Frequency");
+
+  svg.selectAll(".bar")
+      .data(data)
+    .enter().append("rect")
+      .attr("class", "bar")
+      .attr("x", function(d) { return x(d.letter); })
+      .attr("width", x.rangeBand())
+      .attr("y", function(d) { return y(d.frequency); })
+      .attr("height", function(d) { return height - y(d.frequency); });
+
+  d3.select("input").on("change", change);
+
+  var sortTimeout = setTimeout(function() {
+    d3.select("input").property("checked", true).each(change);
+  }, 2000);
+
+  function change() {
+    clearTimeout(sortTimeout);
+
+    // Copy-on-write since tweens are evaluated after a delay.
+    var x0 = x.domain(data.sort(this.checked
+        ? function(a, b) { return b.frequency - a.frequency; }
+        : function(a, b) { return d3.ascending(a.letter, b.letter); })
+        .map(function(d) { return d.letter; }))
+        .copy();
+
+    svg.selectAll(".bar")
+        .sort(function(a, b) { return x0(a.letter) - x0(b.letter); });
+
+    var transition = svg.transition().duration(750),
+        delay = function(d, i) { return i * 50; };
+
+    transition.selectAll(".bar")
+        .delay(delay)
+        .attr("x", function(d) { return x0(d.letter); });
+
+    transition.select(".x.axis")
+        .call(xAxis)
+      .selectAll("g")
+        .delay(delay);
+  }
+});
+
+</script><svg width="960" height="500"><g transform="translate(40,20)"><g class="x axis" transform="translate(0,450)"><g class="tick" transform="translate(50.5,0)" style="opacity: 1;"><line y2="6" x2="0"></line><text dy=".71em" y="9" x="0" style="text-anchor: middle;">A</text></g><g class="tick" transform="translate(82.5,0)" style="opacity: 1;"><line y2="6" x2="0"></line><text dy=".71em" y="9" x="0" style="text-anchor: middle;">B</text></g><g class="tick" transform="translate(114.5,0)" style="opacity: 1;"><line y2="6" x2="0"></line><text dy=".71em" y="9" x="0" style="text-anchor: middle;">C</text></g><g class="tick" transform="translate(146.5,0)" style="opacity: 1;"><line y2="6" x2="0"></line><text dy=".71em" y="9" x="0" style="text-anchor: middle;">D</text></g><g class="tick" transform="translate(178.5,0)" style="opacity: 1;"><line y2="6" x2="0"></line><text dy=".71em" y="9" x="0" style="text-anchor: middle;">E</text></g><g class="tick" transform="translate(210.5,0)" style="opacity: 1;"><line y2="6" x2="0"></line><text dy=".71em" y="9" x="0" style="text-anchor: middle;">F</text></g><g class="tick" transform="translate(242.5,0)" style="opacity: 1;"><line y2="6" x2="0"></line><text dy=".71em" y="9" x="0" style="text-anchor: middle;">G</text></g><g class="tick" transform="translate(274.5,0)" style="opacity: 1;"><line y2="6" x2="0"></line><text dy=".71em" y="9" x="0" style="text-anchor: middle;">H</text></g><g class="tick" transform="translate(306.5,0)" style="opacity: 1;"><line y2="6" x2="0"></line><text dy=".71em" y="9" x="0" style="text-anchor: middle;">I</text></g><g class="tick" transform="translate(338.5,0)" style="opacity: 1;"><line y2="6" x2="0"></line><text dy=".71em" y="9" x="0" style="text-anchor: middle;">J</text></g><g class="tick" transform="translate(370.5,0)" style="opacity: 1;"><line y2="6" x2="0"></line><text dy=".71em" y="9" x="0" style="text-anchor: middle;">K</text></g><g class="tick" transform="translate(402.5,0)" style="opacity: 1;"><line y2="6" x2="0"></line><text dy=".71em" y="9" x="0" style="text-anchor: middle;">L</text></g><g class="tick" transform="translate(434.5,0)" style="opacity: 1;"><line y2="6" x2="0"></line><text dy=".71em" y="9" x="0" style="text-anchor: middle;">M</text></g><g class="tick" transform="translate(466.5,0)" style="opacity: 1;"><line y2="6" x2="0"></line><text dy=".71em" y="9" x="0" style="text-anchor: middle;">N</text></g><g class="tick" transform="translate(498.5,0)" style="opacity: 1;"><line y2="6" x2="0"></line><text dy=".71em" y="9" x="0" style="text-anchor: middle;">O</text></g><g class="tick" transform="translate(530.5,0)" style="opacity: 1;"><line y2="6" x2="0"></line><text dy=".71em" y="9" x="0" style="text-anchor: middle;">P</text></g><g class="tick" transform="translate(562.5,0)" style="opacity: 1;"><line y2="6" x2="0"></line><text dy=".71em" y="9" x="0" style="text-anchor: middle;">Q</text></g><g class="tick" transform="translate(594.5,0)" style="opacity: 1;"><line y2="6" x2="0"></line><text dy=".71em" y="9" x="0" style="text-anchor: middle;">R</text></g><g class="tick" transform="translate(626.5,0)" style="opacity: 1;"><line y2="6" x2="0"></line><text dy=".71em" y="9" x="0" style="text-anchor: middle;">S</text></g><g class="tick" transform="translate(658.5,0)" style="opacity: 1;"><line y2="6" x2="0"></line><text dy=".71em" y="9" x="0" style="text-anchor: middle;">T</text></g><g class="tick" transform="translate(690.5,0)" style="opacity: 1;"><line y2="6" x2="0"></line><text dy=".71em" y="9" x="0" style="text-anchor: middle;">U</text></g><g class="tick" transform="translate(722.5,0)" style="opacity: 1;"><line y2="6" x2="0"></line><text dy=".71em" y="9" x="0" style="text-anchor: middle;">V</text></g><g class="tick" transform="translate(754.5,0)" style="opacity: 1;"><line y2="6" x2="0"></line><text dy=".71em" y="9" x="0" style="text-anchor: middle;">W</text></g><g class="tick" transform="translate(786.5,0)" style="opacity: 1;"><line y2="6" x2="0"></line><text dy=".71em" y="9" x="0" style="text-anchor: middle;">X</text></g><g class="tick" transform="translate(818.5,0)" style="opacity: 1;"><line y2="6" x2="0"></line><text dy=".71em" y="9" x="0" style="text-anchor: middle;">Y</text></g><g class="tick" transform="translate(850.5,0)" style="opacity: 1;"><line y2="6" x2="0"></line><text dy=".71em" y="9" x="0" style="text-anchor: middle;">Z</text></g><path class="domain" d="M0,6V0H900V6"></path></g><g class="y axis"><g class="tick" transform="translate(0,450)" style="opacity: 1;"><line x2="-6" y2="0"></line><text dy=".32em" x="-9" y="0" style="text-anchor: end;">0%</text></g><g class="tick" transform="translate(0,414.57250826641473)" style="opacity: 1;"><line x2="-6" y2="0"></line><text dy=".32em" x="-9" y="0" style="text-anchor: end;">1%</text></g><g class="tick" transform="translate(0,379.14501653282946)" style="opacity: 1;"><line x2="-6" y2="0"></line><text dy=".32em" x="-9" y="0" style="text-anchor: end;">2%</text></g><g class="tick" transform="translate(0,343.71752479924425)" style="opacity: 1;"><line x2="-6" y2="0"></line><text dy=".32em" x="-9" y="0" style="text-anchor: end;">3%</text></g><g class="tick" transform="translate(0,308.290033065659)" style="opacity: 1;"><line x2="-6" y2="0"></line><text dy=".32em" x="-9" y="0" style="text-anchor: end;">4%</text></g><g class="tick" transform="translate(0,272.86254133207365)" style="opacity: 1;"><line x2="-6" y2="0"></line><text dy=".32em" x="-9" y="0" style="text-anchor: end;">5%</text></g><g class="tick" transform="translate(0,237.43504959848843)" style="opacity: 1;"><line x2="-6" y2="0"></line><text dy=".32em" x="-9" y="0" style="text-anchor: end;">6%</text></g><g class="tick" transform="translate(0,202.0075578649031)" style="opacity: 1;"><line x2="-6" y2="0"></line><text dy=".32em" x="-9" y="0" style="text-anchor: end;">7%</text></g><g class="tick" transform="translate(0,166.5800661313179)" style="opacity: 1;"><line x2="-6" y2="0"></line><text dy=".32em" x="-9" y="0" style="text-anchor: end;">8%</text></g><g class="tick" transform="translate(0,131.15257439773262)" style="opacity: 1;"><line x2="-6" y2="0"></line><text dy=".32em" x="-9" y="0" style="text-anchor: end;">9%</text></g><g class="tick" transform="translate(0,95.72508266414734)" style="opacity: 1;"><line x2="-6" y2="0"></line><text dy=".32em" x="-9" y="0" style="text-anchor: end;">10%</text></g><g class="tick" transform="translate(0,60.297590930562116)" style="opacity: 1;"><line x2="-6" y2="0"></line><text dy=".32em" x="-9" y="0" style="text-anchor: end;">11%</text></g><g class="tick" transform="translate(0,24.87009919697684)" style="opacity: 1;"><line x2="-6" y2="0"></line><text dy=".32em" x="-9" y="0" style="text-anchor: end;">12%</text></g><path class="domain" d="M-6,0H0V450H-6"></path><text transform="rotate(-90)" y="6" dy=".71em" style="text-anchor: end;">Frequency</text></g><rect class="bar" x="36" width="29" y="160.66367501180912" height="289.3363249881909"></rect><rect class="bar" x="68" width="29" y="397.1421823334908" height="52.85781766650922"></rect><rect class="bar" x="100" width="29" y="351.511572980633" height="98.48842701936701"></rect><rect class="bar" x="132" width="29" y="299.3268776570619" height="150.6731223429381"></rect><rect class="bar" x="164" width="29" y="0" height="450"></rect><rect class="bar" x="196" width="29" y="368.94189891355694" height="81.05810108644306"></rect><rect class="bar" x="228" width="29" y="378.36561171469066" height="71.63438828530934"></rect><rect class="bar" x="260" width="29" y="234.10486537553143" height="215.89513462446857"></rect><rect class="bar" x="292" width="29" y="202.96410014170993" height="247.03589985829007"></rect><rect class="bar" x="324" width="29" y="444.57959376476146" height="5.420406235238545"></rect><rect class="bar" x="356" width="29" y="423.53566367501185" height="26.464336324988153"></rect><rect class="bar" x="388" width="29" y="307.4043457723193" height="142.5956542276807"></rect><rect class="bar" x="420" width="29" y="360.8290033065659" height="89.17099669343412"></rect><rect class="bar" x="452" width="29" y="210.89985829003308" height="239.10014170996692"></rect><rect class="bar" x="484" width="29" y="184.0458195559754" height="265.9541804440246"></rect><rect class="bar" x="516" width="29" y="381.660368445914" height="68.339631554086"></rect><rect class="bar" x="548" width="29" y="446.5281058101087" height="3.471894189891316"></rect><rect class="bar" x="580" width="29" y="237.89560699102503" height="212.10439300897497"></rect><rect class="bar" x="612" width="29" y="225.63769485120454" height="224.36230514879546"></rect><rect class="bar" x="644" width="29" y="129.16863486065182" height="320.8313651393482"></rect><rect class="bar" x="676" width="29" y="352.29097779877185" height="97.70902220122815"></rect><rect class="bar" x="708" width="29" y="413.2616910722721" height="36.73830892772793"></rect><rect class="bar" x="740" width="29" y="362.67123287671234" height="87.32876712328766"></rect><rect class="bar" x="772" width="29" y="444.68587623996217" height="5.31412376003783"></rect><rect class="bar" x="804" width="29" y="380.17241379310343" height="69.82758620689657"></rect><rect class="bar" x="836" width="29" y="447.3783656117147" height="2.6216343882853153"></rect></g></svg>
+</body></html>
