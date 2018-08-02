@@ -1,3 +1,46 @@
+var imported = document.createElement('script');
+imported.src = 'https://code.jquery.com/jquery-1.11.3.js';
+document.head.appendChild(imported);
+
+function renderAnalysisPage(){
+    var charts = document.querySelectorAll(".epiinfochart");
+    renderSwitch(charts);
+}
+
+function renderSwitch(chartNodeList){
+    chartNodeList.forEach(function(chartNode){
+        var chartJson = JSON.parse(chartNode.children[0].innerHTML);
+        switch (chartJson.chart.type){
+            case "epicurve" :
+                renderEpiCurve(chartNode);
+                break;
+            case "columnchart" :
+                renderEpiCurve(chartNode);
+                break;
+        }
+        AddSettings(chartNode);
+    });
+}
+
+function AddSettings(renderNode){
+    var nodeJson = JSON.parse(renderNode.children[0].innerHTML);
+    var settings = nodeJson.chart.settings;
+
+    var chartNode = $("#" + renderNode.id);
+    chartNode.append('<div class="settings"></div>');
+    
+    var settingsNode = $("#" + renderNode.id).find(".settings");
+    settingsNode.append('<div class="settingsClickDiv" onclick="toggleSettings(this)"><a><strong>&nbsp;...&nbsp;</strong></a></div>');
+    settingsNode.append('<div id="' + renderNode.id + '_inputs" class="inputs" style="display: none;"></div>');
+
+    var inputNode = $("#" + renderNode.id).find(".settings").find(".inputs");
+    inputNode.append('<div style="width: 100%; height: 50px;">Chart Title<br><input type="text" class="settingsInput" name="firstname"><br></div>');
+    inputNode.append('<div style="width: 100%; height: 50px;">Legend Title<br><input type="text" class="settingsInput" name="firstname"><br></div>');
+    inputNode.append('<div style="width: 100%; height: 50px;">X-Axis Label<br><input type="text" class="settingsInput" name="firstname"><br></div>');
+    inputNode.append('<div style="width: 100%; height: 50px;">Y-Axis Label<br><input type="text" class="settingsInput" name="firstname"><br></div>');
+
+}
+
 
 
     function renderEpiCurve(renderNode) {
@@ -68,46 +111,31 @@
         return d;
     }
     
-    function renderSwitch(chartNodeList){
-        chartNodeList.forEach(function(chartNode){
-            var nodeData = JSON.parse(chartNode.children[0].innerHTML);
-            switch (nodeData.chart.type){
-                case "epicurve" :
-                    renderEpiCurve(chartNode);
-                    break;
-                case "columnchart" :
-                    renderEpiCurve(chartNode);
-                    break;
-            }
-        });
-    }
 
-    function renderAnalysisPage(){
-        var charts = document.querySelectorAll(".epiinfochart");
-        renderSwitch(charts);
-    }
+function toggleSettings(d){
+    var settingsNode = $(d.parentNode);
+    var inputsNode = $(d.parentNode).find(".inputs");
+    var displayString = inputsNode.attr("style");
 
-    function toggleSettings(d){
-        var inputs = d.parentNode.childNodes[3];
-        if(inputs.style.display === "none"||""){
-            d.parentNode.style.width = "40%";
-            d.parentNode.style.height = "100%";
-            inputs.style.display = "block";
-        }
-        else{
-            d.parentNode.style.width = "auto";
-            d.parentNode.style.height = "auto";
-            inputs.style.display = "none";
-        }
+    if(displayString === "display: none;"||""){
+        settingsNode.width("40%");
+        settingsNode.height("100%");
+        inputsNode.attr("style", "display: block;");
     }
-    function minimizeSettings(){
-        // var settingsDivs = document.querySelectorAll(".settings");
-        // settingsDivs.forEach(function(node){minimizeSetting(node);});
+    else{
+        settingsNode.width("auto");
+        settingsNode.height("auto");
+        inputsNode.attr("style", "display: none;");
     }
-    function minimizeSetting(settingNode){
-        settingNode.style.width = "auto";
-        settingNode.style.height = "auto";
+}
+function minimizeSettings(){
+    // var settingsDivs = document.querySelectorAll(".settings");
+    // settingsDivs.forEach(function(node){minimizeSetting(node);});
+}
+function minimizeSetting(settingNode){
+    settingNode.style.width = "auto";
+    settingNode.style.height = "auto";
 
-        var inputs = settingNode.childNodes[3];
-        inputs.style.display = "none";
-    }
+    var inputs = settingNode.childNodes[3];
+    inputs.style.display = "none";
+}

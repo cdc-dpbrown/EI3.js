@@ -139,7 +139,6 @@
             float: "clear"; 
         }
         .inputs{
-            display: none;
             clear: both;
             margin-left: 20px;
             margin-right: 20px;
@@ -147,4 +146,8 @@
         }
         .settingsInput{
             width: 100%;
+        }
+        .epiinfochart {
+            width: 1000px; 
+            position: relative;
         }
