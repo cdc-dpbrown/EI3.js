@@ -34,11 +34,12 @@ function AddSettings(renderNode){
     settingsNode.append('<div id="' + renderNode.id + '_inputs" class="inputs" style="display: none;"></div>');
 
     var inputNode = $("#" + renderNode.id).find(".settings").find(".inputs");
-    inputNode.append('<div style="width: 100%; height: 50px;">Chart Title<br><input type="text" class="settingsInput" name="firstname"><br></div>');
-    inputNode.append('<div style="width: 100%; height: 50px;">Legend Title<br><input type="text" class="settingsInput" name="firstname"><br></div>');
-    inputNode.append('<div style="width: 100%; height: 50px;">X-Axis Label<br><input type="text" class="settingsInput" name="firstname"><br></div>');
-    inputNode.append('<div style="width: 100%; height: 50px;">Y-Axis Label<br><input type="text" class="settingsInput" name="firstname"><br></div>');
 
+    if (typeof settings != 'undefined'){
+        settings.forEach(function(attribute){
+            inputNode.append('<div style="width: 100%; height: 50px;">' + attribute.prompt + '<br><input type="text" class="settingsInput" name="' + attribute.name + '" value="' + attribute.value + '" ></div></div>');
+        });
+    }
 }
 
 
