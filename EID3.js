@@ -37,11 +37,12 @@ function AddSettings(renderNode){
 
     if (typeof settings != 'undefined'){
         settings.forEach(function(attribute){
-            inputNode.append('<div style="width: 100%; height: 50px;">' + attribute.prompt + '<br><input type="text" class="settingsInput" name="' + attribute.name + '" value="' + attribute.value + '" ></div></div>');
+            inputNode.append('<div class="settingsInputBlock"><div class="settingsInputLabel">' + attribute.prompt + '</div><input type="text" class="settingsInput" name="' + attribute.name + '" value="' + attribute.value + '" ></div></div>');
         });
     }
-}
 
+    settingsNode.append('<div id="' + renderNode.id + '_buttons" class="buttons" style="display: none;"><button class="card__button">OK</button><button class="card__button">CANCEL</button></div>');
+}
 
 
     function renderEpiCurve(renderNode) {
@@ -116,17 +117,20 @@ function AddSettings(renderNode){
 function toggleSettings(d){
     var settingsNode = $(d.parentNode);
     var inputsNode = $(d.parentNode).find(".inputs");
+    var buttonsNode = $(d.parentNode).find(".buttons");    
     var displayString = inputsNode.attr("style");
 
     if(displayString === "display: none;"||""){
         settingsNode.width("40%");
-        settingsNode.height("100%");
+        settingsNode.height("fit-content");
         inputsNode.attr("style", "display: block;");
+        buttonsNode.attr("style", "display: block;");
     }
     else{
         settingsNode.width("auto");
         settingsNode.height("auto");
         inputsNode.attr("style", "display: none;");
+        buttonsNode.attr("style", "display: none;");
     }
 }
 function minimizeSettings(){

@@ -128,8 +128,9 @@
             right: 0; 
             z-index: 10; 
             border-style: solid; 
-            border-width: 2px;
+            border-width: 0px;
             background: #FFFFFF;
+            box-shadow: 0 10px 55px 0 rgba(0, 0, 0, 0.3), 0 8px 17px 0 rgba(0, 0, 0, 0.15);
         }
         .settingsClickDiv{
             float: right;
@@ -142,12 +143,54 @@
             clear: both;
             margin-left: 20px;
             margin-right: 20px;
-            font-size: smaller;
+            margin-top: 40px;
+        }
+        .settingsInputLabel{
+            font-size: 0.7em;
+            font-weight: bold;
         }
         .settingsInput{
             width: 100%;
+            border-width: 0 0 2px 0;
+            padding: 3px 0;
         }
         .epiinfochart {
             width: 1000px; 
             position: relative;
+        }
+        .settingsInputBlock {
+            width: 100%;
+            margin: 12px 0;
+        }
+        input{
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+        }
+        .card__button {
+            outline: none;
+            position: relative;
+            display: inline-block;
+            line-height: 52px;
+            padding: 0 16px;
+            color: rgb(82, 82, 82);
+
+        }
+        button {
+            border: none;
+            background: transparent;
+        }
+
+        .buttons {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            bottom: 0;
+            top: auto;
+            text-align: right;
+            left: 0;
+            right: 0;
+            padding: 0 8px;
+            box-sizing: border-box;
+            height: 52px;
+            transition: left 200ms cubic-bezier(0.075, 0.82, 0.165, 1);
         }
