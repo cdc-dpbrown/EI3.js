@@ -27,10 +27,11 @@ function AddSettings(renderNode){
     var settings = nodeJson.chart.settings;
 
     var chartNode = $("#" + renderNode.id);
-    chartNode.append('<div class="settings"></div>');
+    var settingDivId = renderNode.id + "_settings";
+    chartNode.append('<div id="' + settingDivId + '" class="settings"></div>');
     
     var settingsNode = $("#" + renderNode.id).find(".settings");
-    settingsNode.append('<div class="settingsClickDiv" onclick="toggleSettings(this)"><a><strong>&nbsp;...&nbsp;</strong></a></div>');
+    settingsNode.append('<div class="settingsClickDiv" onclick="toggleSettings(' + settingDivId + ')"><a><strong>&nbsp;...&nbsp;</strong></a></div>');
     settingsNode.append('<div id="' + renderNode.id + '_inputs" class="inputs" style="display: none;"></div>');
 
     var inputNode = $("#" + renderNode.id).find(".settings").find(".inputs");
@@ -41,83 +42,111 @@ function AddSettings(renderNode){
         });
     }
 
-    settingsNode.append('<div id="' + renderNode.id + '_buttons" class="buttons" style="display: none;"><button class="card__button">OK</button><button class="card__button">CANCEL</button></div>');
+    settingsNode.append('<div id="' + renderNode.id + '_buttons" class="buttons" style="display: none;"><button class="card__button" onclick="okayClick(' + settingDivId + ')">OK</button><button class="card__button" onclick="cancelClick(' + settingDivId + ')">CANCEL</button></div>');
 }
 
+function renderEpiCurve(renderNode) {
 
-    function renderEpiCurve(renderNode) {
+var nodeJson = JSON.parse(renderNode.children[0].innerHTML);
+var data = nodeJson.chart.data;
+
+var parseDate = d3.timeParse("%m/%d/%Y %H:%M:%S %p");
+var formatCount = d3.format(",.0f");
+
+var margin = {top: 10, right: 30, bottom: 30, left: 50};
+var width = 960 - margin.left - margin.right;
+var height = 500 - margin.top - margin.bottom;
+
+var x = d3.scaleBand().rangeRound([0, width]).padding(0);
+var y = d3.scaleLinear().rangeRound([height, 0]);
+
+// var settingsNode = $("#" + renderNode.id).find(".settings");
+// settingsNode.append('<div class="settingsClickDiv" onclick="toggleSettings(' + settingDivId + ')"><a><strong>&nbsp;...&nbsp;</strong></a></div>');
+
+$("#" + renderNode.id).append(
+'<table style="width:100%">' +
+  '<tr>' +
+    '<td class="chartCell"></td>' +
+    '<td class="chartCell">Chart Title</td>' + 
+    '<td class="chartCell"></td>' +
+  '</tr>' +
+  '<tr>' +
+    '<td class="chartCell">Y-Axis Label</td>' +
+    '<td class="chartCell" id="' + renderNode.id + '_svgGraph" class="svgGraph"></td>' + 
+    '<td class="chartCell">Legend</td>' +
+  '</tr>' +
+  '<tr>' +
+    '<td class="chartCell"></td>' +
+    '<td class="chartCell">X-Axis Label</td>' +
+    '<td class="chartCell"></td>' +
+  '</tr>' +
+'</table>');
+
+var svg = d3.select("#" + renderNode.id + "_svgGraph" ).append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var g = svg.append("g")
+    .attr("class", "axis axis--x")
+    .attr("transform", "translate(0," + 0 + ")")
+    .call(d3.axisBottom(x));
     
-    var nodeJson = JSON.parse(renderNode.children[0].innerHTML);
-    var data = nodeJson.chart.data;
+var xDates = data.map(function(d) { return parseDate(d.date); }); 
+xDates = data.map(function(d) { return d.date }); 
+x.domain(xDates);
 
-    var parseDate = d3.timeParse("%m/%d/%Y %H:%M:%S %p");
-    var formatCount = d3.format(",.0f");
+var yValues = d3.max(data, function(d) { return d.value; }); 
+y.domain([0, yValues]);
 
-    var margin = {top: 10, right: 30, bottom: 30, left: 50};
-    var width = 960 - margin.left - margin.right;
-    var height = 500 - margin.top - margin.bottom;
+g.append("g")
+    .attr("class", "axis axis--x")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x));
 
-    var x = d3.scaleBand().rangeRound([0, width]).padding(0);
-    var y = d3.scaleLinear().rangeRound([height, 0]);
+g.append("g")
+    .attr("class", "axis axis--y")
+    .attr("font-size", 14)
+    .call(d3.axisLeft(y))
+    .append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("y", 6)
+    .attr("dy", "0.71em")
+    .attr("text-anchor", "end")
+    .text("Frequency");
 
-    var svg = d3.select("#" + renderNode.id).append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+svg.selectAll("line").attr("x2", 5000); 
 
-    var g = svg.append("g")
-        .attr("class", "axis axis--x")
-        .attr("transform", "translate(0," + 0 + ")")
-        .call(d3.axisBottom(x));
-        
-    var xDates = data.map(function(d) { return parseDate(d.date); }); 
-    xDates = data.map(function(d) { return d.date }); 
-    x.domain(xDates);
+var bar = svg.selectAll(".bar")
+    .data(data)
+    .enter().append("rect")
+    .attr("class", "bar")
+    .attr("x", function(d) { return x(d.date) + 10; })
+    .attr("y", function(d) { return y(d.value); })
+    .attr("width", x.bandwidth())
+    .attr("height", function(d) { return height - y(d.value); })
+    .style("stroke", "#000")
+    .style("stroke-width", 2);;
+}
 
-    var yValues = d3.max(data, function(d) { return d.value; }); 
-    y.domain([0, yValues]);
-    
-    g.append("g")
-        .attr("class", "axis axis--x")
-        .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x));
+function type(d) {
+    d.date = parseDate(d.date);
+    return d;
+}
+  
+function okayClick(d){
+    toggleSettings(d);
+}
 
-    g.append("g")
-        .attr("class", "axis axis--y")
-        .attr("font-size", 14)
-        .call(d3.axisLeft(y))
-        .append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 6)
-        .attr("dy", "0.71em")
-        .attr("text-anchor", "end")
-        .text("Frequency");
-
-    svg.selectAll("line").attr("x2", 5000); 
-
-    var bar = svg.selectAll(".bar")
-        .data(data)
-        .enter().append("rect")
-        .attr("class", "bar")
-        .attr("x", function(d) { return x(d.date) + 10; })
-        .attr("y", function(d) { return y(d.value); })
-        .attr("width", x.bandwidth())
-        .attr("height", function(d) { return height - y(d.value); })
-        .style("stroke", "#000")
-        .style("stroke-width", 2);;
-    }
-
-    function type(d) {
-        d.date = parseDate(d.date);
-        return d;
-    }
-    
+function cancelClick(d){
+    toggleSettings(d);
+}
 
 function toggleSettings(d){
-    var settingsNode = $(d.parentNode);
-    var inputsNode = $(d.parentNode).find(".inputs");
-    var buttonsNode = $(d.parentNode).find(".buttons");    
+    var settingsNode = $(d);
+    var inputsNode = $(d).find(".inputs");
+    var buttonsNode = $(d).find(".buttons");    
     var displayString = inputsNode.attr("style");
 
     if(displayString === "display: none;"||""){
@@ -133,6 +162,7 @@ function toggleSettings(d){
         buttonsNode.attr("style", "display: none;");
     }
 }
+
 function minimizeSettings(){
     // var settingsDivs = document.querySelectorAll(".settings");
     // settingsDivs.forEach(function(node){minimizeSetting(node);});
