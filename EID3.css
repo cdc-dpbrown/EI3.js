@@ -92,6 +92,8 @@
             FILTER:PROGID:DXIMAGETRANSFORM.MICROSOFT.GRADIENT(GRADIENTTYPE=1, STARTCOLORSTR='#00FF0000', ENDCOLORSTR='Orange') PROGID:DXIMAGETRANSFORM.MICROSOFT.GRADIENT(GRADIENTTYPE=0, STARTCOLORSTR='Orange', ENDCOLORSTR='#00FF0000' );
             }
       
+
+            
         .bar {
             fill: #1D60AC;
         }
@@ -120,7 +122,7 @@
             color: #69BC45;
         }
         body{
-           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+           font-family: 'Open Sans', sans-serif;
         }
         .settings{
             position: absolute; 
@@ -160,7 +162,7 @@
             border-color: #1D60AC;
         }
         .epiinfochart {
-            width: 1000px; 
+            width: fit-content;
             position: relative;
         }
         .settingsInputBlock {
@@ -182,7 +184,6 @@
             border: none;
             background: transparent;
         }
-
         .buttons {
             -webkit-user-select: none;
             -moz-user-select: none;
@@ -201,4 +202,27 @@
         .chartCell{
             border: none;
             text-align: center;
+        }
+        .chartCell.chartLabel{
+            font-weight: bold;
+        }
+        .chartCell.chartLabel.graphYAxisLabel{
+            /* display:inline-block;
+            padding-right:0.25em;
+            margin-right:-999px;
+            transform-origin: 0;
+            transform: rotate(-90deg) translate(100%);
+            text-align: center;
+            vertical-align: bottom; */
+            width: 50px
+        }
+
+        .inner {
+            position: absolute;
+            top: 50%;
+            /* left: 50%; */
+        }
+        
+        .rotate {  
+            transform:  translateX(-50%) translateY(-50%) rotate(-90deg);
         }

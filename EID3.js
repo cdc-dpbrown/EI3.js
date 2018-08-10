@@ -9,6 +9,7 @@ function renderAnalysisPage(){
 
 function renderSwitch(chartNodeList){
     chartNodeList.forEach(function(chartNode){
+        addSettings(chartNode);
         var chartJson = JSON.parse(chartNode.children[0].innerHTML);
         switch (chartJson.chart.type){
             case "epicurve" :
@@ -18,11 +19,10 @@ function renderSwitch(chartNodeList){
                 renderEpiCurve(chartNode);
                 break;
         }
-        AddSettings(chartNode);
     });
 }
 
-function AddSettings(renderNode){
+function addSettings(renderNode){
     var nodeJson = JSON.parse(renderNode.children[0].innerHTML);
     var settings = nodeJson.chart.settings;
 
@@ -31,18 +31,25 @@ function AddSettings(renderNode){
     chartNode.append('<div id="' + settingDivId + '" class="settings"></div>');
     
     var settingsNode = $("#" + renderNode.id).find(".settings");
-    settingsNode.append('<div class="settingsClickDiv" onclick="toggleSettings(' + settingDivId + ')"><a><strong>&nbsp;...&nbsp;</strong></a></div>');
+    settingsNode.append('<div class="settingsClickDiv" onclick="toggleSettings(' + renderNode.id + ')"><a><strong>&nbsp;...&nbsp;</strong></a></div>');
     settingsNode.append('<div id="' + renderNode.id + '_inputs" class="inputs" style="display: none;"></div>');
 
     var inputNode = $("#" + renderNode.id).find(".settings").find(".inputs");
 
     if (typeof settings != 'undefined'){
         settings.forEach(function(attribute){
-            inputNode.append('<div class="settingsInputBlock"><div class="settingsInputLabel">' + attribute.prompt + '</div><input type="text" class="settingsInput" name="' + attribute.name + '" value="' + attribute.value + '" ></div></div>');
+            inputNode.append('<div class="settingsInputBlock"><div class="settingsInputLabel">' + attribute.prompt + '</div><input type="text" id="' + renderNode.id + '_' + attribute.name + '" class="settingsInput" name="' + attribute.name + '" value="' + attribute.value + '" ></div></div>');
         });
     }
 
-    settingsNode.append('<div id="' + renderNode.id + '_buttons" class="buttons" style="display: none;"><button class="card__button" onclick="okayClick(' + settingDivId + ')">OK</button><button class="card__button" onclick="cancelClick(' + settingDivId + ')">CANCEL</button></div>');
+    settingsNode.append('<div id="' + renderNode.id + '_buttons" class="buttons" style="display: none;"><button class="card__button" onclick="okayClick(' + renderNode.id + ')">OK</button><button class="card__button" onclick="cancelClick(' + renderNode.id + ')">CANCEL</button></div>');
+}
+
+function applySettings(chartNode){
+   $("#" + chartNode.id + "_title.chartCell span").text($("#" + chartNode.id + "_chartTitle.settingsInput").val());
+   $("#" + chartNode.id + "_legend.chartCell span").text($("#" + chartNode.id + "_legendTitle.settingsInput").val());
+   $("#" + chartNode.id + "_xAxisLabel.chartCell span").text($("#" + chartNode.id + "_xAxisLabel.settingsInput").val());
+   $("#" + chartNode.id + "_yAxisLabel.chartCell span").text($("#" + chartNode.id + "_yAxisLabel.settingsInput").val());
 }
 
 function renderEpiCurve(renderNode) {
@@ -60,29 +67,27 @@ var height = 500 - margin.top - margin.bottom;
 var x = d3.scaleBand().rangeRound([0, width]).padding(0);
 var y = d3.scaleLinear().rangeRound([height, 0]);
 
-// var settingsNode = $("#" + renderNode.id).find(".settings");
-// settingsNode.append('<div class="settingsClickDiv" onclick="toggleSettings(' + settingDivId + ')"><a><strong>&nbsp;...&nbsp;</strong></a></div>');
-
 $("#" + renderNode.id).append(
 '<table style="width:100%">' +
   '<tr>' +
     '<td class="chartCell"></td>' +
-    '<td class="chartCell">Chart Title</td>' + 
-    '<td class="chartCell"></td>' +
+    '<td class="chartCell chartLabel" id="' + renderNode.id + '_title" class="graphTitle"><span></span></td>' +
+    '<td class="chartCell" id="' + renderNode.id + '_settings"></td>' +
   '</tr>' +
   '<tr>' +
-    '<td class="chartCell">Y-Axis Label</td>' +
-    '<td class="chartCell" id="' + renderNode.id + '_svgGraph" class="svgGraph"></td>' + 
-    '<td class="chartCell">Legend</td>' +
+    '<td class="chartCell chartLabel graphYAxisLabel" id="' + renderNode.id + '_yAxisLabel"><span class="inner rotate"></span></td>' +
+    '<td class="chartCell" id="' + renderNode.id + '_svgGraph" class="svgGraph"></td>' +
+    '<td class="chartCell graphYAxisLabel" id="' + renderNode.id + '_legend" class="graphLegend"><span></span></td>' +
   '</tr>' +
   '<tr>' +
     '<td class="chartCell"></td>' +
-    '<td class="chartCell">X-Axis Label</td>' +
+    '<td class="chartCell chartLabel" id="' + renderNode.id + '_xAxisLabel" class="graphXAxisLabel"><span></span></td>' +
     '<td class="chartCell"></td>' +
   '</tr>' +
 '</table>');
 
 var svg = d3.select("#" + renderNode.id + "_svgGraph" ).append("svg")
+    .attr("id", renderNode.id + "_svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
@@ -100,10 +105,28 @@ x.domain(xDates);
 var yValues = d3.max(data, function(d) { return d.value; }); 
 y.domain([0, yValues]);
 
-g.append("g")
+var xAxis = g.append("g")
     .attr("class", "axis axis--x")
-    .attr("transform", "translate(0," + height + ")")
+    .attr("transform", "translate(0," + height + ") ")
     .call(d3.axisBottom(x));
+
+var nodez = xAxis.selectAll("text").nodes();
+var textHeight = nodez[0].getBBox().height;
+var maxTextWidth = d3.max(nodez, n => n.getBBox().width);
+var textRotation = 45;
+var verticalComponentOfMaxTextAfterRotate = maxTextWidth * Math.sin(45);
+
+if(maxTextWidth > x.bandwidth()){
+    xAxis.selectAll("text")	
+    .style("text-anchor", "end")
+    .attr("dx", "-.8em")
+    .attr("dy", ".15em")
+    .attr("transform", function(d) {
+        return "rotate(-" + textRotation + ")" 
+    });
+    var newHeight = $("#" + renderNode.id + "_svg").height() + verticalComponentOfMaxTextAfterRotate;
+    $("#" + renderNode.id + "_svg").height(newHeight);
+}
 
 g.append("g")
     .attr("class", "axis axis--y")
@@ -127,7 +150,9 @@ var bar = svg.selectAll(".bar")
     .attr("width", x.bandwidth())
     .attr("height", function(d) { return height - y(d.value); })
     .style("stroke", "#000")
-    .style("stroke-width", 2);;
+    .style("stroke-width", 2);
+
+applySettings(renderNode);    
 }
 
 function type(d) {
@@ -136,6 +161,7 @@ function type(d) {
 }
   
 function okayClick(d){
+    applySettings(d);
     toggleSettings(d);
 }
 
@@ -144,7 +170,7 @@ function cancelClick(d){
 }
 
 function toggleSettings(d){
-    var settingsNode = $(d);
+    var settingsNode =$("#" + d.id + "_settings");
     var inputsNode = $(d).find(".inputs");
     var buttonsNode = $(d).find(".buttons");    
     var displayString = inputsNode.attr("style");
@@ -164,13 +190,9 @@ function toggleSettings(d){
 }
 
 function minimizeSettings(){
-    // var settingsDivs = document.querySelectorAll(".settings");
-    // settingsDivs.forEach(function(node){minimizeSetting(node);});
+    var settingsDivs = document.querySelectorAll(".settings");
+    settingsDivs.forEach(function(node){minimizeSetting(node);});
 }
-function minimizeSetting(settingNode){
-    settingNode.style.width = "auto";
-    settingNode.style.height = "auto";
 
-    var inputs = settingNode.childNodes[3];
-    inputs.style.display = "none";
+function minimizeSetting(settingNode){
 }
