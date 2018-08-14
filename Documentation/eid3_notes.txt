@@ -1,4 +1,6 @@
+https://css-tricks.com/transforms-on-svg-elements/
 
+https://stackoverflow.com/questions/21660843/print-only-svg-from-browser
 
 https://bl.ocks.org/mbostock/3019563
 
@@ -7,14 +9,14 @@ https://academic.oup.com/jid
 
 https://www.cdc.gov/DataStatistics/
 
-
+chartId=epiInfo&7
 chartType=HISTOGRAM
 independentValueType=System.DateTime
-startFrom=01/01/0001·12:00:00.000·AM
+startFrom=01/01/0001ï¿½12:00:00.000ï¿½AM
 chartLineSeries=
 LineSeriesTitle=Ill
 LineSeriesTitleIndependentValueFormat
 IndependentValueFormatDependentValueFormatDependentValueFormatLineSeriesDataString
-05/06/2012·12:00:00.000·AM^sidv^22^&^05/07/2012·12:00:00.000·AM^sidv^70^&^05/08/2012·12:00:00.000·AM^sidv^75^&^05/09/2012·12:00:00.000·AM^sidv^26LineSeriesDataString)"/>
+05/06/2012ï¿½12:00:00.000ï¿½AM^sidv^22^&^05/07/2012ï¿½12:00:00.000ï¿½AM^sidv^70^&^05/08/2012ï¿½12:00:00.000ï¿½AM^sidv^75^&^05/09/2012ï¿½12:00:00.000ï¿½AM^sidv^26LineSeriesDataString)"/>
 
 

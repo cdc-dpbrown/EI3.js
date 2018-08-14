@@ -52,107 +52,146 @@ function applySettings(chartNode){
    $("#" + chartNode.id + "_yAxisLabel.chartCell span").text($("#" + chartNode.id + "_yAxisLabel.settingsInput").val());
 }
 
-function renderEpiCurve(renderNode) {
-
-var nodeJson = JSON.parse(renderNode.children[0].innerHTML);
-var data = nodeJson.chart.data;
-
-var parseDate = d3.timeParse("%m/%d/%Y %H:%M:%S %p");
-var formatCount = d3.format(",.0f");
-
-var margin = {top: 10, right: 30, bottom: 30, left: 50};
-var width = 960 - margin.left - margin.right;
-var height = 500 - margin.top - margin.bottom;
-
-var x = d3.scaleBand().rangeRound([0, width]).padding(0);
-var y = d3.scaleLinear().rangeRound([height, 0]);
-
-$("#" + renderNode.id).append(
-'<table style="width:100%">' +
-  '<tr>' +
-    '<td class="chartCell"></td>' +
-    '<td class="chartCell chartLabel" id="' + renderNode.id + '_title" class="graphTitle"><span></span></td>' +
-    '<td class="chartCell" id="' + renderNode.id + '_settings"></td>' +
-  '</tr>' +
-  '<tr>' +
-    '<td class="chartCell chartLabel graphYAxisLabel" id="' + renderNode.id + '_yAxisLabel"><span class="inner rotate"></span></td>' +
-    '<td class="chartCell" id="' + renderNode.id + '_svgGraph" class="svgGraph"></td>' +
-    '<td class="chartCell graphYAxisLabel" id="' + renderNode.id + '_legend" class="graphLegend"><span></span></td>' +
-  '</tr>' +
-  '<tr>' +
-    '<td class="chartCell"></td>' +
-    '<td class="chartCell chartLabel" id="' + renderNode.id + '_xAxisLabel" class="graphXAxisLabel"><span></span></td>' +
-    '<td class="chartCell"></td>' +
-  '</tr>' +
-'</table>');
-
-var svg = d3.select("#" + renderNode.id + "_svgGraph" ).append("svg")
-    .attr("id", renderNode.id + "_svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-var g = svg.append("g")
-    .attr("class", "axis axis--x")
-    .attr("transform", "translate(0," + 0 + ")")
-    .call(d3.axisBottom(x));
-    
-var xDates = data.map(function(d) { return parseDate(d.date); }); 
-xDates = data.map(function(d) { return d.date }); 
-x.domain(xDates);
-
-var yValues = d3.max(data, function(d) { return d.value; }); 
-y.domain([0, yValues]);
-
-var xAxis = g.append("g")
-    .attr("class", "axis axis--x")
-    .attr("transform", "translate(0," + height + ") ")
-    .call(d3.axisBottom(x));
-
-var nodez = xAxis.selectAll("text").nodes();
-var textHeight = nodez[0].getBBox().height;
-var maxTextWidth = d3.max(nodez, n => n.getBBox().width);
-var textRotation = 45;
-var verticalComponentOfMaxTextAfterRotate = maxTextWidth * Math.sin(45);
-
-if(maxTextWidth > x.bandwidth()){
-    xAxis.selectAll("text")	
-    .style("text-anchor", "end")
-    .attr("dx", "-.8em")
-    .attr("dy", ".15em")
-    .attr("transform", function(d) {
-        return "rotate(-" + textRotation + ")" 
-    });
-    var newHeight = $("#" + renderNode.id + "_svg").height() + verticalComponentOfMaxTextAfterRotate;
-    $("#" + renderNode.id + "_svg").height(newHeight);
+function toDegrees (angle) {
+   return angle * (180 / Math.PI);
 }
 
-g.append("g")
-    .attr("class", "axis axis--y")
-    .attr("font-size", 14)
-    .call(d3.axisLeft(y))
-    .append("text")
-    .attr("transform", "rotate(-90)")
-    .attr("y", 6)
-    .attr("dy", "0.71em")
-    .attr("text-anchor", "end")
-    .text("Frequency");
+function toRadians (angle) {
+    return angle * (Math.PI / 180);
+}
 
-svg.selectAll("line").attr("x2", 5000); 
+function getBoxWidth(node){
 
-var bar = svg.selectAll(".bar")
-    .data(data)
-    .enter().append("rect")
-    .attr("class", "bar")
-    .attr("x", function(d) { return x(d.date) + 10; })
-    .attr("y", function(d) { return y(d.value); })
-    .attr("width", x.bandwidth())
-    .attr("height", function(d) { return height - y(d.value); })
-    .style("stroke", "#000")
-    .style("stroke-width", 2);
+}
 
-applySettings(renderNode);    
+function renderEpiCurve(renderNode) {
+
+    var yOffset = 10;
+
+    var nodeJson = JSON.parse(renderNode.children[0].innerHTML);
+    var data = nodeJson.chart.data;
+
+    var parseDate = d3.timeParse("%m/%d/%Y %H:%M:%S %p");
+    var formatCount = d3.format(",.0f");
+
+    var margin = {top: 10, right: 30, bottom: 30, left: 50};
+    var width = 960 - margin.left - margin.right;
+    var height = 500 - margin.top - margin.bottom;
+
+    var x = d3.scaleBand().rangeRound([0, width]).padding(0);
+    var y = d3.scaleLinear().rangeRound([height, 0]);
+
+    $("#" + renderNode.id).append(
+    '<table style="width:100%">' +
+    '<tr>' +
+        '<td class="chartCell"></td>' +
+        '<td class="chartCell chartLabel" id="' + renderNode.id + '_title" class="graphTitle"><span></span></td>' +
+        '<td class="chartCell" id="' + renderNode.id + '_settings"></td>' +
+    '</tr>' +
+    '<tr>' +
+        '<td class="chartCell chartLabel graphYAxisLabel" id="' + renderNode.id + '_yAxisLabel"><span class="inner rotate"></span></td>' +
+        '<td class="chartCell" id="' + renderNode.id + '_svgGraph" class="svgGraph"></td>' +
+        '<td class="chartCell graphYAxisLabel" id="' + renderNode.id + '_legend" class="graphLegend"><span></span></td>' +
+    '</tr>' +
+    '<tr>' +
+        '<td class="chartCell"></td>' +
+        '<td class="chartCell chartLabel" id="' + renderNode.id + '_xAxisLabel" class="graphXAxisLabel"><span></span></td>' +
+        '<td class="chartCell"></td>' +
+    '</tr>' +
+    '</table>');
+
+    var svg = d3.select("#" + renderNode.id + "_svgGraph" ).append("svg")
+        .attr("id", renderNode.id + "_svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var g = svg.append("g")
+        .attr("class", "axis axis--x")
+        .attr("transform", "translate(" + yOffset + "," + 0 + ")")
+        .call(d3.axisBottom(x));
+        
+    var xDates = data.map(function(d) { return parseDate(d.date); }); 
+    xDates = data.map(function(d) { return d.date }); 
+    x.domain(xDates);
+
+    var yValues = d3.max(data, function(d) { return d.value; }); 
+    y.domain([0, yValues]);
+
+    var xAxis = g.append("g")
+        .attr("class", "axis axis--x")
+        .attr("transform", "translate(0," + height + ") ")
+        .call(d3.axisBottom(x));
+
+    var barPitch = x.bandwidth();
+
+    try{
+        var textNodes = xAxis.selectAll("text").nodes();
+        var textHeight = textNodes[0].getBBox().height;
+        var maxTextWidth = d3.max(textNodes, n => n.getBBox().width);
+        var degreeRotation = 45;
+        var overUnder = textHeight/barPitch;
+        if(overUnder > 1.0) {
+            overUnder = 1.0;
+        }
+        degreeRotation = 90 - toDegrees(Math.acos(overUnder));
+
+        if(degreeRotation < 45){
+            degreeRotation = 45;
+        }else if(degreeRotation > 80){
+            degreeRotation = 90;
+        }
+        var verticalComponentOfMaxTextAfterRotate = Math.abs(maxTextWidth * Math.sin(toRadians(degreeRotation)));
+
+        var ratio = Math.cos(toRadians(degreeRotation));
+
+        var xTextRotationOriginOffset = 2;
+        var yTextRotationOriginOffset = 2 + 7 * (ratio);
+    }
+    catch{
+    }
+
+    if(maxTextWidth > x.bandwidth()){
+        xAxis.selectAll("text")	
+        .style("text-anchor", "end")
+        .attr("dx", "-.8em")
+        .attr("dy", ".15em")
+        .attr("x", xTextRotationOriginOffset)
+        .attr("y", yTextRotationOriginOffset)
+        .attr("transform", function(d) {
+            return "rotate(-" + degreeRotation + ")" 
+        });
+        var newHeight = $("#" + renderNode.id + "_svg").height() + verticalComponentOfMaxTextAfterRotate;
+        $("#" + renderNode.id + "_svg").height(newHeight);
+    }
+
+    g.append("g")
+        .attr("class", "axis axis--y")
+        .attr("font-size", 14)
+        .call(d3.axisLeft(y))
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", "0.71em")
+        .attr("text-anchor", "end")
+        .text("Frequency");
+
+    svg.selectAll(".axis--y line")
+        .attr("x2", 5000);
+
+    var bar = svg.selectAll(".bar")
+        .data(data)
+        .enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", function(d) { return x(d.date) + yOffset; })
+        .attr("y", function(d) { return y(d.value); })
+        .attr("width", x.bandwidth())
+        .attr("height", function(d) { return height - y(d.value); })
+        .style("stroke", "#000")
+        .style("stroke-width", 2);
+
+    applySettings(renderNode);    
 }
 
 function type(d) {
