@@ -1,4 +1,4 @@
-https://css-tricks.com/transforms-on-svg-elements/
+﻿https://css-tricks.com/transforms-on-svg-elements/
 
 https://stackoverflow.com/questions/21660843/print-only-svg-from-browser
 
@@ -9,7 +9,10 @@ https://academic.oup.com/jid
 
 https://www.cdc.gov/DataStatistics/
 
-chartId=epiInfo&7
+http://bl.ocks.org/mikehadlow/93b471e569e31af07cd3
+
+
+epiInfo&7
 chartType=HISTOGRAM
 independentValueType=System.DateTime
 startFrom=01/01/0001�12:00:00.000�AM
@@ -17,6 +20,107 @@ chartLineSeries=
 LineSeriesTitle=Ill
 LineSeriesTitleIndependentValueFormat
 IndependentValueFormatDependentValueFormatDependentValueFormatLineSeriesDataString
-05/06/2012�12:00:00.000�AM^sidv^22^&^05/07/2012�12:00:00.000�AM^sidv^70^&^05/08/2012�12:00:00.000�AM^sidv^75^&^05/09/2012�12:00:00.000�AM^sidv^26LineSeriesDataString)"/>
+05/06/2012�12:00:00.000�AM^sidv^22
+05/07/2012�12:00:00.000�AM^sidv^70
+05/08/2012�12:00:00.000�AM^sidv^75
+05/09/2012�12:00:00.000�AM^sidv^26LineSeriesDataString)"/>
+
+
+
+READ {C:\Users\ita3\Desktop\2018.07.14 Epi Info 7.2.2.12 (dual keys)(en-US,es-ES, fr-FR)\Epi Info 7\Projects\EColi\EColi.prj}:FoodHistory
+LIST * GRIDTABLE
+GRAPH OnsetDate GRAPHTYPE="Epi Curve" WEIGHTVAR=COUNT(ILL) TITLETEXT="example Title" XTITLE="example Independent Axis Label" YTITLE="example Dependent Axis Label"
+
+
+READ {config:EColi.prj}:FoodHistory 
+GRAPH OnsetDate * Fever GRAPHTYPE="Epi Curve" STRATAVAR=Chills WEIGHTVAR=COUNT(ILL) TITLETEXT="example Title" XTITLE="example Independent Axis Label" YTITLE="example Dependent Axis Label"
+
+
+wbMain.ScriptErrorsSuppressed = true;
+
+
+chartType=HISTOGRAM
+chartTitle=example Title Chills=No
+independentLabel=example Independent Axis Label
+dependentLabel=example Dependent Axis Label
+independentValueType=System.DateTime
+startFrom=01/01/0001�12:00:00.000�AM
+chartLineSeries=(
+    LineSeriesTitleFever=False
+    LineSeriesTitleIndependentValueFormat
+    IndependentValueFormatDependentValueFormat
+    DependentValueFormat
+    LineSeriesDataString
+    04/20/2011�12:00:00.000�AM^sidv^1
+    04/21/2011�12:00:00.000�AM^sidv^0
+    04/22/2011�12:00:00.000�AM^sidv^0
+    04/23/2011�12:00:00.000�AM^sidv^0
+    04/24/2011�12:00:00.000�AM^sidv^0
+    04/25/2011�12:00:00.000�AM^sidv^1
+    04/26/2011�12:00:00.000�AM^sidv^0
+    04/28/2011�12:00:00.000�AM^sidv^0
+    04/29/2011�12:00:00.000�AM^sidv^0
+    04/30/2011�12:00:00.000�AM^sidv^0
+    05/01/2011�12:00:00.000�AM^sidv^0
+    05/02/2011�12:00:00.000�AM^sidv^0
+    05/03/2011�12:00:00.000�AM^sidv^0
+    05/04/2011�12:00:00.000�AM^sidv^0
+    05/05/2011�12:00:00.000�AM^sidv^1
+    05/06/2011�12:00:00.000�AM^sidv^0
+    05/07/2011�12:00:00.000�AM^sidv^0
+    05/08/2011�12:00:00.000�AM^sidv^1
+    05/09/2011�12:00:00.000�AM^sidv^2
+    05/10/2011�12:00:00.000�AM^sidv^0
+    05/11/2011�12:00:00.000�AM^sidv^0
+    05/12/2011�12:00:00.000�AM^sidv^0
+    05/13/2011�12:00:00.000�AM^sidv^0
+    05/14/2011�12:00:00.000�AM^sidv^0
+    05/15/2011�12:00:00.000�AM^sidv^0
+    05/16/2011�12:00:00.000�AM^sidv^0
+    05/17/2011�12:00:00.000�AM^sidv^0
+    05/19/2011�12:00:00.000�AM^sidv^0
+    05/20/2011�12:00:00.000�AM^sidv^0
+    05/22/2011�12:00:00.000�AM^sidv^0
+    05/23/2011�12:00:00.000�AM^sidv^0
+    05/24/2011�12:00:00.000�AM^sidv^0LineSeriesDataString)
+    
+    
+    ((LineSeriesTitleFever=True
+    LineSeriesTitleIndependentValueFormat
+    IndependentValueFormatDependentValueFormat
+    DependentValueFormat
+    LineSeriesDataString
+    04/20/2011�12:00:00.000�AM^sidv^0
+    04/21/2011�12:00:00.000�AM^sidv^0
+    04/22/2011�12:00:00.000�AM^sidv^0
+    04/23/2011�12:00:00.000�AM^sidv^1
+    04/24/2011�12:00:00.000�AM^sidv^1
+    04/25/2011�12:00:00.000�AM^sidv^1
+    04/26/2011�12:00:00.000�AM^sidv^4
+    04/28/2011�12:00:00.000�AM^sidv^3
+    04/29/2011�12:00:00.000�AM^sidv^3
+    04/30/2011�12:00:00.000�AM^sidv^4
+    05/01/2011�12:00:00.000�AM^sidv^3
+    05/02/2011�12:00:00.000�AM^sidv^8
+    05/03/2011�12:00:00.000�AM^sidv^3
+    05/04/2011�12:00:00.000�AM^sidv^4
+    05/05/2011�12:00:00.000�AM^sidv^11
+    05/06/2011�12:00:00.000�AM^sidv^5
+    05/07/2011�12:00:00.000�AM^sidv^3
+    05/08/2011�12:00:00.000�AM^sidv^7
+    05/09/2011�12:00:00.000�AM^sidv^14
+    05/10/2011�12:00:00.000�AM^sidv^8
+    05/11/2011�12:00:00.000�AM^sidv^1
+    05/12/2011�12:00:00.000�AM^sidv^6
+    05/13/2011�12:00:00.000�AM^sidv^5
+    05/14/2011�12:00:00.000�AM^sidv^2
+    05/15/2011�12:00:00.000�AM^sidv^0
+    05/16/2011�12:00:00.000�AM^sidv^0
+    05/17/2011�12:00:00.000�AM^sidv^1
+    05/19/2011�12:00:00.000�AM^sidv^0
+    05/20/2011�12:00:00.000�AM^sidv^0
+    05/22/2011�12:00:00.000�AM^sidv^0
+    05/23/2011�12:00:00.000�AM^sidv^0
+    05/24/2011�12:00:00.000�AM^sidv^0LineSeriesDataString)
 
 

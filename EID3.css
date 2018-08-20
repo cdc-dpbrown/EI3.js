@@ -161,8 +161,14 @@
         .settingsInput:focus{
             border-color: #1D60AC;
         }
+
+        .commandResponse{
+            clear: both;
+        }
         .epiinfochart {
-            width: fit-content;
+            /* width: fit-content; NOT IE11 */
+            float:left;
+            clear:left;
             position: relative;
         }
         .settingsInputBlock {
@@ -225,4 +231,25 @@
         
         .rotate {  
             transform:  translateX(-50%) translateY(-50%) rotate(-90deg);
+        }
+        
+        @media print { different css for print SVG }
+
+        .legend{
+            margin-bottom:76px;
+            display:inline-block;
+            border-collapse: collapse;
+            border-spacing: 0px;
+        }
+        .legend td{
+            padding:4px 5px;
+            vertical-align:bottom;
+        }
+        .legendFreq, .legendPerc{
+            align:right;
+            width:50px;
+        }
+
+        #silverlightControlHost{
+            display: none;
         }

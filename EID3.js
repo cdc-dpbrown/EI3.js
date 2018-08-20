@@ -8,22 +8,25 @@ function renderAnalysisPage(){
 }
 
 function renderSwitch(chartNodeList){
-    chartNodeList.forEach(function(chartNode){
-        addSettings(chartNode);
-        var chartJson = JSON.parse(chartNode.children[0].innerHTML);
+    
+    for (var i = 0, len = chartNodeList.length; i < len; i++) {
+
+        addSettings(chartNodeList[i]);
+        var chartJson = JSON.parse(chartNodeList[i].children[0].innerHTML);
         switch (chartJson.chart.type){
             case "epicurve" :
-                renderEpiCurve(chartNode);
+                renderEpiCurve(chartNodeList[i]);
                 break;
             case "columnchart" :
-                renderEpiCurve(chartNode);
+                renderEpiCurve(chartNodeList[i]);
                 break;
         }
-    });
+    }
 }
 
 function addSettings(renderNode){
-    var nodeJson = JSON.parse(renderNode.children[0].innerHTML);
+    var innerHTML = renderNode.children[0].innerHTML;
+    var nodeJson = JSON.parse(innerHTML);
     var settings = nodeJson.chart.settings;
 
     var chartNode = $("#" + renderNode.id);
@@ -61,7 +64,17 @@ function toRadians (angle) {
 }
 
 function getBoxWidth(node){
-
+    width = node.getBBox().width;
+    return width;
+}
+function getMaxBoxWidth(nodes){
+    var max = 0;
+    for (var i = 0, len = nodes.length; i < len; i++) {
+        if(max < nodes[i].getBBox().width){
+            max = nodes[i].getBBox().width;
+        }
+    }
+    return max;
 }
 
 function renderEpiCurve(renderNode) {
@@ -82,7 +95,7 @@ function renderEpiCurve(renderNode) {
     var y = d3.scaleLinear().rangeRound([height, 0]);
 
     $("#" + renderNode.id).append(
-    '<table style="width:100%">' +
+    '<table>' +
     '<tr>' +
         '<td class="chartCell"></td>' +
         '<td class="chartCell chartLabel" id="' + renderNode.id + '_title" class="graphTitle"><span></span></td>' +
@@ -91,7 +104,7 @@ function renderEpiCurve(renderNode) {
     '<tr>' +
         '<td class="chartCell chartLabel graphYAxisLabel" id="' + renderNode.id + '_yAxisLabel"><span class="inner rotate"></span></td>' +
         '<td class="chartCell" id="' + renderNode.id + '_svgGraph" class="svgGraph"></td>' +
-        '<td class="chartCell graphYAxisLabel" id="' + renderNode.id + '_legend" class="graphLegend"><span></span></td>' +
+        '<td class="chartCell graphLegend" id="' + renderNode.id + '_legend"><span></span></td>' +
     '</tr>' +
     '<tr>' +
         '<td class="chartCell"></td>' +
@@ -129,7 +142,8 @@ function renderEpiCurve(renderNode) {
     try{
         var textNodes = xAxis.selectAll("text").nodes();
         var textHeight = textNodes[0].getBBox().height;
-        var maxTextWidth = d3.max(textNodes, n => n.getBBox().width);
+
+        var maxTextWidth = getMaxBoxWidth(textNodes);
         var degreeRotation = 45;
         var overUnder = textHeight/barPitch;
         if(overUnder > 1.0) {
@@ -149,7 +163,7 @@ function renderEpiCurve(renderNode) {
         var xTextRotationOriginOffset = 2;
         var yTextRotationOriginOffset = 2 + 7 * (ratio);
     }
-    catch{
+    catch(e){
     }
 
     if(maxTextWidth > x.bandwidth()){
@@ -191,7 +205,8 @@ function renderEpiCurve(renderNode) {
         .style("stroke", "#000")
         .style("stroke-width", 2);
 
-    applySettings(renderNode);    
+    applySettings(renderNode);
+    renderLegend(renderNode);  
 }
 
 function type(d) {
@@ -234,4 +249,49 @@ function minimizeSettings(){
 }
 
 function minimizeSetting(settingNode){
+}
+
+// function to handle legend.
+function renderLegend(chartNode){
+    var leg = {};
+        
+    // create table for legend.
+    var legend = d3.select("#" + chartNode.id + "_legend").append("table").attr('class','legend');
+    
+    // // create one row per segment.
+    // var tr = legend.append("tbody").selectAll("tr").data(lD).enter().append("tr");
+        
+    // // create the first column for each segment.
+    // tr.append("td").append("svg").attr("width", '16').attr("height", '16').append("rect")
+    //     .attr("width", '16').attr("height", '16')
+    //     .attr("fill",function(d){ return segColor(d.type); });
+        
+    // // create the second column for each segment.
+    // tr.append("td").text(function(d){ return d.type;});
+
+    // // create the third column for each segment.
+    // tr.append("td").attr("class",'legendFreq')
+    //     .text(function(d){ return d3.format(",")(d.freq);});
+
+    // // create the fourth column for each segment.
+    // tr.append("td").attr("class",'legendPerc')
+    //     .text(function(d){ return getLegend(d,lD);});
+
+    // // Utility function to be used to update the legend.
+    // leg.update = function(nD){
+    //     // update the data attached to the row elements.
+    //     var l = legend.select("tbody").selectAll("tr").data(nD);
+
+    //     // update the frequencies.
+    //     l.select(".legendFreq").text(function(d){ return d3.format(",")(d.freq);});
+
+    //     // update the percentage column.
+    //     l.select(".legendPerc").text(function(d){ return getLegend(d,nD);});        
+    // }
+    
+    // function getLegend(d,aD){ // Utility function to compute percentage.
+    //     return d3.format("%")(d.freq/d3.sum(aD.map(function(v){ return v.freq; })));
+    // }
+
+    // return leg;
 }
