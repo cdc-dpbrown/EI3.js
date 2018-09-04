@@ -123,7 +123,7 @@ function renderEpiCurve(renderNode) {
     var g = svg.append("g")
         .attr("class", "axis axis--x")
         .attr("transform", "translate(" + yOffset + "," + 0 + ")")
-        .call(d3.axisBottom(x));
+        .call(d3.axisBottom(x));//.ticks(5));
         
     var xDates = data.map(function(d) { return parseDate(d.date); }); 
     xDates = data.map(function(d) { return d.date }); 
@@ -135,7 +135,7 @@ function renderEpiCurve(renderNode) {
     var xAxis = g.append("g")
         .attr("class", "axis axis--x")
         .attr("transform", "translate(0," + height + ") ")
-        .call(d3.axisBottom(x));
+        .call(d3.axisBottom(x));//.ticks(5));
 
     var barPitch = x.bandwidth();
 

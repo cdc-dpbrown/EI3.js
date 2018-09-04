@@ -1,9 +1,9 @@
-﻿https://css-tricks.com/transforms-on-svg-elements/
+﻿Transforms on SVG Elements
+https://css-tricks.com/transforms-on-svg-elements/
 
 https://stackoverflow.com/questions/21660843/print-only-svg-from-browser
 
 https://bl.ocks.org/mbostock/3019563
-
 
 https://academic.oup.com/jid
 
@@ -11,6 +11,11 @@ https://www.cdc.gov/DataStatistics/
 
 http://bl.ocks.org/mikehadlow/93b471e569e31af07cd3
 
+Changing the number of ticks on an axis in d3.js v4
+http://www.d3noob.org/2016/08/changing-number-of-ticks-on-axis-in.html
+
+Self-Executing Anonymous Functions or How to Write Clean Javascript
+http://esbueno.noahstokes.com/post/77292606977/self-executing-anonymous-functions-or-how-to-write
 
 epiInfo&7
 chartType=HISTOGRAM
@@ -123,4 +128,4 @@ chartLineSeries=(
     05/23/2011�12:00:00.000�AM^sidv^0
     05/24/2011�12:00:00.000�AM^sidv^0LineSeriesDataString)
 
-
+".\Projects\TrackingMasterNew\Reports_ProjectsbyCohort.cvs7" "\Projects\TrackingMasterNew\Reports_ProjectsbyCohort.html" /minimized:"True"
